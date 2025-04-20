@@ -1,5 +1,3 @@
-getgenv().key = getgenv().key or ""
-
 local HttpService = game:GetService("HttpService")
 local RbxAnalyticsService = game:GetService("RbxAnalyticsService")
 local Players = game:GetService("Players")
