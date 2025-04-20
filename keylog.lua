@@ -132,7 +132,7 @@ local embedData = {
                 {name = "Authentication", value = realData.auth, inline = true},
             },
             footer = {
-                text = "Logged at UTC: " .. utcStr .. " | KST: " .. kstStr .. " | PST: " .. pstStr
+                text = "Logged at KST: " .. utcStr .. " | UTC: " .. kstStr .. " | PST: " .. pstStr
             },
             thumbnail = {
                 url = thumbnailUrl
